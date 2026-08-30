@@ -1,0 +1,20 @@
+const S={i:0,a:{},steps:[
+{key:"name",q:"Como você gostaria de ser chamado?",help:"Ex.: Filipe"},
+{key:"currency",q:"Qual moeda você utiliza?",options:["BRL — Real brasileiro","USD — US Dollar","EUR — Euro"]},
+{key:"frequency",q:"Com que frequência deseja acompanhar suas finanças?",options:["Diariamente","Semanalmente","Mensalmente"]},
+{key:"income",q:"Qual é sua renda mensal média?",type:"number",help:"Digite apenas o valor. Ex.: 7500"},
+{key:"incomeType",q:"Qual é seu tipo principal de renda?",options:["Fixa","Variável","Mista"]},
+{key:"extra",q:"Possui renda adicional mensal média?",type:"number",help:"Digite 0 se não possuir"},
+{key:"fixed",q:"Qual é sua média de despesas fixas mensais?",type:"number"},
+{key:"variable",q:"Qual é sua média de despesas variáveis mensais?",type:"number"},
+{key:"debt",q:"Qual é seu comprometimento mensal com dívidas?",type:"number",help:"Digite 0 se não possuir"},
+{key:"goals",q:"Qual objetivo é mais importante agora?",options:["Reserva de emergência","Reduzir dívidas","Economizar","Compra planejada","Outro"]},
+{key:"style",q:"Como o agente deve se comunicar?",options:["Simples","Objetivo","Detalhado"]},
+{key:"alerts",q:"Deseja receber alertas quando o orçamento estiver próximo do limite?",options:["Sim","Não"]}
+]};
+const $=s=>document.querySelector(s);function start(){S.i=0;S.a={};$("#welcome").classList.add("hidden");$("#wizard").classList.remove("hidden");render()}$("#start").onclick=start;
+function render(){let s=S.steps[S.i];$("#progress").textContent=`${S.i+1} de ${S.steps.length}`;$("#question").textContent=s.q;$("#help").textContent=s.help||"";let o=$("#options"),inp=$("#answer"),next=$("#next");o.innerHTML="";if(s.options){inp.classList.add("hidden");next.classList.add("hidden");s.options.forEach(v=>{let b=document.createElement("button");b.className="option";b.textContent=v;b.onclick=()=>save(v);o.appendChild(b)})}else{inp.value="";inp.type=s.type||"text";inp.placeholder=s.help||"Digite sua resposta";inp.classList.remove("hidden");next.classList.remove("hidden");next.onclick=()=>save(inp.value.trim())}}
+function save(v){if(v==="")return;S.a[S.steps[S.i].key]=v;if(++S.i<S.steps.length)render();else finish()}
+function num(k){return Number(String(S.a[k]||0).replace(",","."))||0}function money(n){let cur=(S.a.currency||"BRL").slice(0,3);return new Intl.NumberFormat("pt-BR",{style:"currency",currency:cur}).format(n)}
+function finish(){let income=num("income")+num("extra"),expenses=num("fixed")+num("variable")+num("debt"),balance=income-expenses,pct=income?expenses/income*100:0;$("#wizard").classList.add("hidden");$("#result").classList.remove("hidden");$("#nameTitle").textContent=`Perfil de ${S.a.name}`;$("#income").textContent=money(income);$("#expenses").textContent=money(expenses);$("#balance").textContent=money(balance);$("#commitment").textContent=pct.toFixed(1)+"%";let cfg={agent_name:"Personal Financial Assistant",mode:"local-first",profile:{name:S.a.name,currency:S.a.currency.slice(0,3),review_frequency:S.a.frequency},financial_context:{monthly_income:income,estimated_expenses:expenses,estimated_balance:balance},goals:[S.a.goals],communication:{style:S.a.style},monitoring:{budget_alerts:S.a.alerts==="Sim",budget_warning_percent:80,monthly_comparison:true,trend_detection:true},restrictions:["Do not execute financial transactions","Do not request banking credentials","Do not make autonomous investment decisions"]};$("#config").textContent=JSON.stringify(cfg,null,2);S.cfg=cfg}
+$("#back").onclick=()=>{if(S.i>0){S.i--;render()}else{$("#wizard").classList.add("hidden");$("#welcome").classList.remove("hidden")}};$("#restart").onclick=()=>location.reload();$("#copy").onclick=()=>navigator.clipboard.writeText(JSON.stringify(S.cfg,null,2));

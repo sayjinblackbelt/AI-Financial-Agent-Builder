@@ -41,9 +41,9 @@ def initialize_database(profile):
 
     CREATE TABLE IF NOT EXISTS budgets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER NOT NULL,
-        monthly_limit REAL NOT NULL,
-        active INTEGER DEFAULT 1,
+        category_id INTEGER NOT NULL UNIQUE,
+        monthly_limit REAL NOT NULL CHECK(monthly_limit > 0),
+        active INTEGER NOT NULL DEFAULT 1,
         FOREIGN KEY(category_id) REFERENCES categories(id)
     );
 

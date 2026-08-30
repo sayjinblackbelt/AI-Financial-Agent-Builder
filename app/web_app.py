@@ -53,7 +53,8 @@ def create_transaction():
     transaction_type=data.get("transaction_type")
     if not description or amount<=0 or transaction_type not in {"income","expense"}:
         return jsonify({"error":"Valid description, positive amount and transaction type are required."}),400
-    transaction_id=add_transaction(description,amount,transaction_type,data.get("category"))
+    transaction_date = data.get("transaction_date")
+    transaction_id=add_transaction(description,amount,transaction_type,data.get("category"),transaction_date)
     return jsonify({"id":transaction_id,"summary":get_monthly_summary()}),201
 
 @application.get("/api/summary")

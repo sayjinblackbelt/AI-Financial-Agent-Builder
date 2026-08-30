@@ -204,3 +204,12 @@ python web_app.py
 Then open the local address shown by Flask.
 
 > The browser prototype can still run independently as a static demonstration. The Flask version is the path for persistence and full backend integration.
+
+---
+
+## Author
+
+**Filipe G Morais**
+
+GitHub: https://github.com/sayjinblackbelt  
+Repository: https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder

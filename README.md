@@ -173,3 +173,34 @@ app/
 ## Status
 
 🟡 Early development — architecture and MVP definition.
+
+
+## 🌐 Web + Python integration
+
+The project now has a Flask API layer connecting the browser onboarding to the Python application logic.
+
+```
+Web Interface
+     ↓ POST /api/build-profile
+Flask API
+     ↓
+Financial Profile Service
+     ↓
+SQLite
+     ↓
+Agent Configuration
+     ↓
+Prompt Builder
+```
+
+### Run locally
+
+```bash
+pip install -r requirements.txt
+cd app
+python web_app.py
+```
+
+Then open the local address shown by Flask.
+
+> The browser prototype can still run independently as a static demonstration. The Flask version is the path for persistence and full backend integration.

@@ -2,6 +2,12 @@ from database.connection import get_connection
 from datetime import date
 
 def add_transaction(description, amount, transaction_type, category_name=None, transaction_date=None):
+    description = str(description or "").strip()
+    amount = float(amount)
+    if not description:
+        raise ValueError("description is required")
+    if amount <= 0:
+        raise ValueError("amount must be positive")
     if transaction_type not in {"income", "expense"}:
         raise ValueError("transaction_type must be income or expense")
 
@@ -27,7 +33,7 @@ def add_transaction(description, amount, transaction_type, category_name=None, t
         VALUES (?, ?, ?, ?, ?)
     """, (
         transaction_date or date.today().isoformat(),
-        description.strip(),
+        description,
         category_id,
         float(amount),
         transaction_type
@@ -45,7 +51,7 @@ def get_monthly_summary():
             transaction_type,
             COALESCE(SUM(amount), 0) AS total
         FROM transactions
-        WHERE strftime('%Y-%m', transaction_date) = strftime('%Y-%m', 'now')
+        WHERE strftime('%Y-%m', transaction_date) = strftime('%Y-%m', 'now', 'localtime')
         GROUP BY transaction_type
     """)
     rows = {row["transaction_type"]: row["total"] for row in cursor.fetchall()}

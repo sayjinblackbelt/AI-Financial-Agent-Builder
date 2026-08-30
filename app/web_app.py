@@ -7,8 +7,13 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB_DIR = os.path.join(BASE_DIR, "web")
+application = Flask(__name__)
 
-application = Flask(__name__, static_folder=WEB_DIR)
+def to_number(value):
+    try:
+        return float(str(value or 0).replace(",", "."))
+    except (TypeError, ValueError):
+        return 0.0
 
 @application.get("/")
 def home():
@@ -21,47 +26,45 @@ def web_files(filename):
 @application.post("/api/build-profile")
 def build_profile():
     data = request.get_json(silent=True) or {}
+    currency = str(data.get("currency", "BRL"))[:3].upper()
 
     profile = {
         "profile": {
-            "name": data.get("name", "User"),
-            "currency": data.get("currency", "BRL"),
-            "review_frequency": data.get("frequency", "Monthly")
+            "name": str(data.get("name") or "User").strip()[:100],
+            "currency": currency if currency in {"BRL", "USD", "EUR"} else "BRL",
+            "review_frequency": str(data.get("frequency") or "Monthly")
         },
         "income": {
-            "monthly_average": float(data.get("income", 0)),
-            "type": data.get("incomeType", "Fixed"),
-            "additional_monthly_average": float(data.get("extra", 0))
+            "monthly_average": to_number(data.get("income")),
+            "type": str(data.get("incomeType") or "Fixed"),
+            "additional_monthly_average": to_number(data.get("extra"))
         },
         "expenses": {
-            "fixed_monthly_average": float(data.get("fixed", 0)),
-            "variable_monthly_average": float(data.get("variable", 0)),
-            "categories": data.get("categories", ["Housing", "Food", "Transport"])
+            "fixed_monthly_average": to_number(data.get("fixed")),
+            "variable_monthly_average": to_number(data.get("variable")),
+            "categories": ["Housing", "Food", "Transport", "Health", "Education", "Leisure"]
         },
         "debts": {
-            "has_debt": float(data.get("debt", 0)) > 0,
-            "monthly_commitment": float(data.get("debt", 0))
+            "has_debt": to_number(data.get("debt")) > 0,
+            "monthly_commitment": to_number(data.get("debt"))
         },
-        "goals": [data.get("goals", "Financial organization")],
+        "goals": [str(data.get("goals") or "Financial organization")],
         "preferences": {
-            "communication_style": data.get("style", "Simple"),
+            "communication_style": str(data.get("style") or "Simple"),
             "detail_level": "Basic",
-            "budget_alerts": data.get("alerts", False)
+            "budget_alerts": bool(data.get("alerts", False))
         }
     }
 
     snapshot = calculate_initial_snapshot(profile)
     profile["initial_snapshot"] = snapshot
-
     initialize_database(profile)
     config = build_agent_config(profile)
     prompt = build_agent_prompt(profile, config)
 
     return jsonify({
-        "profile": profile,
-        "snapshot": snapshot,
-        "agent_config": config,
-        "agent_instructions": prompt
+        "profile": profile, "snapshot": snapshot,
+        "agent_config": config, "agent_instructions": prompt
     })
 
 if __name__ == "__main__":

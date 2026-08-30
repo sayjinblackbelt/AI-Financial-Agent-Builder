@@ -43,6 +43,56 @@ def get_budget_status():
     connection.close()
     return results
 
+def get_month_comparison():
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        WITH monthly AS (
+            SELECT strftime('%Y-%m', transaction_date) AS month,
+                   transaction_type,
+                   SUM(amount) AS total
+            FROM transactions
+            WHERE transaction_date >= date('now', 'start of month', '-1 month')
+            GROUP BY month, transaction_type
+        )
+        SELECT month, transaction_type, total FROM monthly
+    """)
+    rows = cursor.fetchall()
+
+    current_month = {}
+    previous_month = {}
+    from datetime import date
+    today = date.today()
+    current_key = today.strftime("%Y-%m")
+    previous_key = (today.replace(day=1).fromordinal(today.replace(day=1).toordinal()-1)).strftime("%Y-%m")
+
+    for row in rows:
+        target = current_month if row["month"] == current_key else previous_month if row["month"] == previous_key else None
+        if target is not None:
+            target[row["transaction_type"]] = row["total"]
+
+    def values(data):
+        income = data.get("income", 0)
+        expenses = data.get("expense", 0)
+        return {"income": income, "expenses": expenses, "balance": income - expenses}
+
+    current = values(current_month)
+    previous = values(previous_month)
+
+    def change(now, before):
+        absolute = now - before
+        percent = (absolute / before * 100) if before else None
+        return {"absolute": round(absolute, 2), "percent": round(percent, 1) if percent is not None else None}
+
+    connection.close()
+    return {
+        "current": current,
+        "previous": previous,
+        "income_change": change(current["income"], previous["income"]),
+        "expense_change": change(current["expenses"], previous["expenses"]),
+        "balance_change": change(current["balance"], previous["balance"])
+    }
+
 def analyze_finances():
     summary = get_monthly_summary()
     alerts = []
@@ -59,4 +109,34 @@ def analyze_finances():
             alerts.append({"level": "warning", "message": f"{budget['category']} reached {budget['percent']}% of its monthly budget."})
 
     top_categories = get_category_expenses()[:3]
-    return {"summary": summary, "alerts": alerts, "budget_status": budgets, "top_expense_categories": top_categories}
+    comparison = get_month_comparison()
+
+    trends = []
+    expense_change = comparison["expense_change"]
+    balance_change = comparison["balance_change"]
+
+    if expense_change["percent"] is not None and abs(expense_change["percent"]) >= 5:
+        direction = "increased" if expense_change["absolute"] > 0 else "decreased"
+        trends.append({
+            "type": "expenses",
+            "direction": direction,
+            "absolute": expense_change["absolute"],
+            "percent": expense_change["percent"]
+        })
+
+    if balance_change["absolute"] != 0:
+        trends.append({
+            "type": "balance",
+            "direction": "improved" if balance_change["absolute"] > 0 else "worsened",
+            "absolute": balance_change["absolute"],
+            "percent": balance_change["percent"]
+        })
+
+    return {
+        "summary": summary,
+        "alerts": alerts,
+        "budget_status": budgets,
+        "top_expense_categories": top_categories,
+        "comparison": comparison,
+        "trends": trends
+    }

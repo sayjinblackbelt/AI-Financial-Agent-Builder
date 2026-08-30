@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Financial Agent Builder</title><link rel="stylesheet" href="web/styles.css"></head>
+<body><main class="app">
+<header><span class="badge">MVP • LOCAL-FIRST</span><h1>AI Financial Agent Builder</h1><p>Responda algumas perguntas e crie a configuração inicial do seu assistente financeiro.</p></header>
+<section id="welcome" class="panel"><h2>Como funciona?</h2><ol><li>Você responde perguntas simples.</li><li>O sistema cria seu perfil financeiro.</li><li>Você recebe um resumo e a configuração do agente.</li></ol><button id="start" class="primary">Começar configuração</button></section>
+<section id="wizard" class="panel hidden"><div class="top"><button id="back" class="link">← Voltar</button><span id="progress"></span></div><h2 id="question"></h2><p id="help"></p><div id="options"></div><input id="answer" class="hidden"><button id="next" class="primary hidden">Continuar</button></section>
+<section id="result" class="hidden">
+<div class="panel"><span class="badge">PERFIL CRIADO</span><h2 id="nameTitle"></h2><div class="metrics"><div><small>Receita estimada</small><strong id="income"></strong></div><div><small>Despesas estimadas</small><strong id="expenses"></strong></div><div><small>Saldo estimado</small><strong id="balance"></strong></div><div><small>Comprometimento</small><strong id="commitment"></strong></div></div></div>
+<div class="panel"><h2>Configuração do agente</h2><pre id="config"></pre><button id="copy" class="secondary">Copiar configuração</button><button id="restart" class="primary">Nova configuração</button></div>
+</section>
+<footer>Protótipo educacional • Não solicita dados bancários • Não realiza transações</footer>
+</main><script src="web/app.js"></script></body></html>

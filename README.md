@@ -77,7 +77,7 @@ transactions
 budgets
 financial_goals
 agent_settings
-monthly_snapshots
+financial_snapshot
 ```
 
 ## 🤖 Agent configuration
@@ -172,7 +172,7 @@ app/
 
 ## Status
 
-🟡 Early development — architecture and MVP definition.
+🟢 MVP in active development — onboarding, local SQLite persistence, transactions, budgets, alerts, insights and monthly trend analysis are implemented.
 
 
 ## 🌐 Web + Python integration

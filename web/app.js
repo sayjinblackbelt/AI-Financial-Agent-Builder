@@ -12,9 +12,16 @@ $("#refreshSummary").onclick=refreshSummary;$("#back").onclick=()=>{if(S.i>0){S.
 async function refreshAnalysis(){
  try{
   const r=await fetch("/api/analysis"); const data=await r.json();
-  const alerts=$("#alerts"), categories=$("#topCategories"), budgets=$("#budgetStatus");
+  const alerts=$("#alerts"), categories=$("#topCategories"), budgets=$("#budgetStatus"), trends=$("#trends");
   alerts.innerHTML=data.alerts.length?data.alerts.map(a=>`<div class="alert ${a.level}">${a.level==="critical"?"🔴":"🟡"} ${a.message}</div>`).join(""):'<div class="alert ok">🟢 Nenhum alerta financeiro relevante no momento.</div>';
   categories.innerHTML=data.top_expense_categories.length?data.top_expense_categories.map((c,i)=>`<div class="insight"><span>#${i+1} ${c.category}</span><strong>${money(c.total)}</strong></div>`).join(""):'<p>Ainda não há despesas registradas.</p>';
+  trends.innerHTML=data.trends&&data.trends.length?data.trends.map(t=>{
+    const icon=t.direction==="improved"||t.direction==="decreased"?"📈":"📉";
+    const label=t.type==="expenses"?"Despesas":"Saldo";
+    const direction=t.direction==="improved"?"melhorou":t.direction==="worsened"?"piorou":t.direction==="increased"?"aumentou":"diminuiu";
+    const pct=t.percent!==null?` (${Math.abs(t.percent)}%)`:"";
+    return `<div class="insight"><span>${icon} ${label} ${direction}${pct} em relação ao mês anterior.</span><strong>${money(Math.abs(t.absolute))}</strong></div>`;
+  }).join(""):'<p>Registre dados em mais de um mês para visualizar tendências.</p>';
   budgets.innerHTML=data.budget_status.length?data.budget_status.map(b=>`<div class="insight"><span>${b.status==="exceeded"?"🔴":b.status==="warning"?"🟡":"🟢"} ${b.category} — ${b.percent}%</span><strong>${money(b.spent)} / ${money(b.limit)}</strong></div>`).join(""):'<p>Nenhum orçamento definido.</p>';
  }catch(e){console.warn("Analysis unavailable",e)}
 }

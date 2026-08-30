@@ -9,7 +9,7 @@ def get_category_expenses():
         FROM transactions t
         LEFT JOIN categories c ON c.id = t.category_id
         WHERE t.transaction_type = 'expense'
-          AND strftime('%Y-%m', t.transaction_date) = strftime('%Y-%m', 'now')
+          AND strftime('%Y-%m', t.transaction_date) = strftime('%Y-%m', 'now', 'localtime')
         GROUP BY c.name
         ORDER BY total DESC
     """)
@@ -27,7 +27,7 @@ def get_budget_status():
         JOIN categories c ON c.id = b.category_id
         LEFT JOIN transactions t ON t.category_id = c.id
             AND t.transaction_type = 'expense'
-            AND strftime('%Y-%m', t.transaction_date) = strftime('%Y-%m', 'now')
+            AND strftime('%Y-%m', t.transaction_date) = strftime('%Y-%m', 'now', 'localtime')
         WHERE b.active = 1
         GROUP BY b.id
     """)
@@ -52,7 +52,7 @@ def get_month_comparison():
                    transaction_type,
                    SUM(amount) AS total
             FROM transactions
-            WHERE transaction_date >= date('now', 'start of month', '-1 month')
+            WHERE transaction_date >= date('now', 'localtime', 'start of month', '-1 month')
             GROUP BY month, transaction_type
         )
         SELECT month, transaction_type, total FROM monthly

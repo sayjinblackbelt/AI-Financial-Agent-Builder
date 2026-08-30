@@ -4,6 +4,8 @@ from agent.config_builder import build_agent_config
 from agent.prompt_builder import build_agent_prompt
 from services.financial_profile_service import calculate_initial_snapshot
 from services.transaction_service import add_transaction, get_monthly_summary
+from services.financial_analyzer import analyze_finances
+from services.budget_service import set_budget
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,6 +58,20 @@ def create_transaction():
 @application.get("/api/summary")
 def summary():
     return jsonify(get_monthly_summary())
+
+@application.get("/api/analysis")
+def analysis():
+    return jsonify(analyze_finances())
+
+@application.post("/api/budgets")
+def create_budget():
+    data = request.get_json(silent=True) or {}
+    category = str(data.get("category") or "").strip()
+    limit = to_number(data.get("monthly_limit"))
+    if not category or limit <= 0:
+        return jsonify({"error": "Category and positive monthly limit are required."}), 400
+    set_budget(category, limit)
+    return jsonify({"message": "Budget saved.", "analysis": analyze_finances()}), 201
 
 if __name__=="__main__":
     application.run(debug=True)

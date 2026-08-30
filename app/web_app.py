@@ -6,6 +6,7 @@ from services.financial_profile_service import calculate_initial_snapshot
 from services.transaction_service import add_transaction, get_monthly_summary
 from services.financial_analyzer import analyze_finances
 from services.budget_service import set_budget
+from services.financial_insights import build_financial_insights, build_financial_narrative
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,6 +63,14 @@ def summary():
 @application.get("/api/analysis")
 def analysis():
     return jsonify(analyze_finances())
+
+@application.get("/api/insights")
+def insights():
+    return jsonify(build_financial_insights())
+
+@application.get("/api/narrative")
+def narrative():
+    return jsonify({"narrative": build_financial_narrative()})
 
 @application.post("/api/budgets")
 def create_budget():

@@ -219,3 +219,5 @@ Repository: https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder
 <!-- CI retest after Ruff quality adjustment -->
 
 <!-- CI retest: database bootstrap -->
+
+<!-- CI retest: Flask application object -->

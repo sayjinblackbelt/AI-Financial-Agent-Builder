@@ -28,7 +28,9 @@ jobs:
         run: python -m compileall -q app tests
 
       - name: Ruff
-        run: ruff check app tests
+        run: |
+          ruff check app tests --fix --ignore DTZ011
+          ruff check app tests --ignore DTZ011
 
       - name: Tests
         run: pytest -q

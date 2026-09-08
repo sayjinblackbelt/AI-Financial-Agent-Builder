@@ -217,3 +217,5 @@ Repository: https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder
 <!-- CI trigger: multilingual portfolio validation -->
 
 <!-- CI retest after Ruff quality adjustment -->
+
+<!-- CI retest: database bootstrap -->

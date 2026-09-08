@@ -33,9 +33,29 @@ jobs:
           ruff check app tests --ignore DTZ011
 
       - name: Tests
-        run: pytest -q
+        env:
+          PYTHONPATH: app
+        run: |
+          python - <<'PY'
+          from database.connection import initialize_database
+          from services.financial_profile_service import calculate_initial_snapshot
+
+          profile = {
+              "profile": {"name": "CI Test User", "currency": "BRL", "review_frequency": "Monthly"},
+              "income": {"monthly_average": 5000, "type": "Fixed", "additional_monthly_average": 0},
+              "expenses": {"fixed_monthly_average": 1800, "variable_monthly_average": 1200, "categories": ["Food"]},
+              "debts": {"has_debt": False, "monthly_commitment": 0},
+              "goals": ["Emergency reserve"],
+              "preferences": {"communication_style": "Simple", "detail_level": "Basic", "budget_alerts": True}
+          }
+          profile["initial_snapshot"] = calculate_initial_snapshot(profile)
+          initialize_database(profile)
+          PY
+          pytest -q
 
       - name: Flask smoke test
+        env:
+          PYTHONPATH: app
         run: |
           cd app
           python - <<'PY'

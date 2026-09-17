@@ -1,24 +1,44 @@
 # AI Financial Agent Builder
 
-> A local-first application that turns a user's financial profile and registered transactions into structured financial analysis and a foundation for a future conversational AI assistant.
+> **Local-first financial intelligence builder** — transforma contexto financeiro estruturado em análise determinística e prepara a base para um agente conversacional.
 
-## 🎯 Project purpose
+## ✦ PROJECT PAGES — NEXA STUDIO
 
-AI Financial Agent Builder is a portfolio project focused on **financial organization, data analysis and agent architecture**. It is not a banking application, investment platform or automatic transaction system.
+### **[ABRIR O CASE INTERATIVO →](https://sayjinblackbelt.github.io/AI-Financial-Agent-Builder/)**
 
-The current MVP provides:
+Dashboard editorial com navegação por seções, arquitetura, snapshot técnico, roadmap e identidade **NEXA Studio**.
 
-1. Guided financial onboarding.
-2. Structured financial profile generation.
-3. Local SQLite persistence.
-4. Transaction and category management.
-5. Category budgets and alerts.
-6. Monthly summaries and month-over-month comparison.
-7. Rule-based financial insights and narrative.
-8. Agent configuration and prompt generation.
-9. Flask API + browser dashboard.
+**Powered by [NEXA Studio](https://sayjinblackbelt.github.io/NEXA-Studio/)** · [Código-fonte](https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder)
 
-## 🔄 Core flow
+---
+
+## 🎯 O projeto
+
+O **AI Financial Agent Builder** é um projeto de portfólio focado em **organização financeira, análise de dados e arquitetura de agentes**.
+
+A proposta não é substituir bancos ou criar uma plataforma de investimentos. O sistema constrói uma camada local de contexto financeiro que pode, posteriormente, ser utilizada por um agente de IA conversacional.
+
+### MVP atual
+
+- Guided financial onboarding
+- Perfil financeiro estruturado
+- Persistência local com SQLite
+- Receitas e despesas
+- Categorias
+- Orçamentos e alertas
+- Resumo mensal
+- Comparação mês a mês
+- Tendências
+- Insights e narrativa baseada em regras
+- Configuração/prompt do agente
+- Flask API
+- Dashboard web
+- Testes automatizados
+- GitHub Actions / CI
+
+---
+
+## 🧭 Core flow
 
 ```text
 Guided Onboarding
@@ -33,12 +53,41 @@ Financial Analyzer
       ↓
 Insights / Alerts / Trends
       ↓
-Agent Configuration + Prompt
+Agent Configuration
       ↓
 Future Conversational AI
 ```
 
+A arquitetura mantém a matemática financeira fora do modelo de IA: **dados e regras produzem os fatos; a futura IA interpreta intenção e apresenta contexto**.
+
+---
+
 ## 🧱 Architecture
+
+```text
+Browser UI
+   │
+   ▼
+Flask API
+   │
+   ├── Transaction Service
+   ├── Budget Service
+   ├── Financial Analyzer
+   └── Financial Insights
+            │
+            ▼
+          SQLite
+            │
+            ├── profile
+            ├── categories
+            ├── transactions
+            ├── budgets
+            ├── financial_goals
+            ├── agent_settings
+            └── financial_snapshot
+```
+
+### Repository structure
 
 ```text
 app/
@@ -67,75 +116,84 @@ web/
 ├── app.js
 └── styles.css
 
+tests/
 index.html
 requirements.txt
-tests/
 ```
 
-### Data model
-
-```text
-profile
-categories
-transactions
-budgets
-financial_goals
-agent_settings
-financial_snapshot
-```
-
-The database is **local-first**. Re-running the profile builder updates configuration while preserving registered transactions and budgets.
+---
 
 ## 🧠 Intelligence layer
 
-The analyzer currently works deterministically from SQLite data. It calculates:
+O analyzer atual é determinístico e consulta os dados persistidos no SQLite para calcular:
 
-- current-month income, expenses and balance;
-- top expense categories;
-- budget utilization and alerts;
-- current vs. previous month;
-- expense and balance trends;
-- rule-based financial insights.
+- receitas, despesas e saldo do mês;
+- principais categorias de despesa;
+- utilização e excesso de orçamento;
+- alertas financeiros;
+- comparação com o mês anterior;
+- tendências de despesas e saldo;
+- insights e narrativa baseada em regras.
 
-The future AI layer should interpret these structured results rather than replacing deterministic financial calculations.
+A futura camada de IA deverá trabalhar **sobre esses resultados estruturados**, e não substituir os cálculos financeiros.
 
-## 🤖 Agent configuration
+---
 
-The builder generates:
+## 🤖 Agent architecture
 
-- user financial context;
-- categories and goals;
-- monitoring rules;
-- alert thresholds;
-- communication preferences;
-- explicit safety restrictions.
+A configuração do agente consolida:
 
-Current restrictions include:
+- contexto financeiro;
+- categorias;
+- objetivos;
+- preferências de comunicação;
+- regras de monitoramento;
+- limiares de alerta;
+- restrições de segurança.
 
-- no financial transaction execution;
-- no banking credentials;
-- no autonomous investment decisions;
-- clarification when financial data is incomplete.
+### Restrições atuais
 
-## 🧪 Testing
+- não executa transações financeiras;
+- não solicita credenciais bancárias;
+- não toma decisões autônomas de investimento;
+- não deve inventar dados financeiros;
+- deve solicitar esclarecimento quando os dados forem insuficientes.
 
-The repository includes automated tests for database flows, transactions, budgets, monthly history, analyzer contracts, insights, prompt generation and Flask API integration.
+---
 
-Run locally with:
+## 🧪 Quality & testing
+
+O projeto possui testes para:
+
+- banco de dados;
+- transações;
+- budgets;
+- histórico mensal;
+- analyzer;
+- insights;
+- geração de prompt;
+- integração Flask/API;
+- fluxo financeiro;
+- preservação dos dados ao reexecutar configuração.
+
+### Local
 
 ```bash
 pip install -r requirements.txt
 pip install pytest ruff
-PYTHONPATH=app pytest -q
-```
 
-Quality checks used by CI:
-
-```bash
 python -m compileall -q app tests
 ruff check app tests --ignore DTZ011
 PYTHONPATH=app pytest -q
 ```
+
+### CI
+
+O GitHub Actions executa os gates de qualidade do projeto, incluindo sintaxe Python, Ruff, testes, smoke test Flask, documentação e verificação de padrões de segredo.
+
+**Status atual: CI — PASS.**
+
+---
 
 ## 🚀 Run locally
 
@@ -145,61 +203,55 @@ cd app
 python web_app.py
 ```
 
-Then open the local address shown by Flask.
+Depois, abra o endereço local exibido pelo Flask.
 
-> The current application requires the Flask backend for the complete experience, because onboarding, persistence and analysis use the Python API and SQLite database.
+> A experiência completa depende do backend Flask, porque onboarding, persistência e análise utilizam a API Python e o SQLite.
+
+---
 
 ## 🗺️ Roadmap
 
-### v0.1 — Builder
-- Guided questions
-- Financial profile
-- Agent configuration
+| Versão | Foco | Estado |
+|---|---|---|
+| **v0.1** | Builder + onboarding | ✓ |
+| **v0.2** | Transactions + budgets | ✓ |
+| **v0.3** | Analysis + dashboard + CI | **CURRENT** |
+| **v0.4** | Conversational agent | NEXT |
+| **v0.5+** | Import/export + reports + expansion | PLANNED |
+| **v1.0** | Demonstrable portfolio product | PLANNED |
 
-### v0.2 — Financial control
-- Transactions
-- Categories
-- Budgets
-- Monthly summaries
-
-### v0.3 — Intelligence layer **← current MVP**
-- Financial analysis
-- Alerts
-- Month comparison
-- Trend detection
-- Rule-based insights
-- Flask dashboard
-- Automated tests
-
-### v0.4 — Conversational agent
-- Natural-language questions
-- Context-aware analysis
-- Natural-language transaction input
-- Agent configuration integration
-
-### v1.0 — Demonstrable portfolio product
-- Import/export
-- Reports
-- Deployment
-- Documentation and product demonstration
+---
 
 ## 🔒 Privacy principles
 
-- Local-first by default.
-- No banking credentials.
-- No automatic financial transactions.
-- No autonomous investment decisions.
-- AI integration should be optional.
+**Local-first by design.**
 
-## Status
+- Sem credenciais bancárias.
+- Sem execução automática de transações.
+- Sem decisões autônomas de investimento.
+- Integração de IA opcional.
+- Dados financeiros podem permanecer no ambiente local.
 
-🟡 **MVP v0.3 — technical validation in progress.**
+---
 
-The core application, persistence layer, analysis layer, dashboard and automated test suite are implemented. The next validation step is executing the complete suite and browser/API flow in a real development environment.
+## 📌 Status
+
+**MVP v0.3 — validated core / browser validation next.**
+
+A camada técnica principal está implementada e a suíte automatizada está integrada ao CI. A próxima etapa é a validação manual da experiência completa no ambiente local, incluindo navegador, fluxo E2E e dados simulados de múltiplos meses.
+
+---
+
+## 🎨 NEXA Studio
+
+Este projeto é apresentado como um **concept case tecnológico do NEXA Studio**, combinando design de produto, desenvolvimento, dados e arquitetura de agentes.
+
+**Powered by [NEXA Studio](https://sayjinblackbelt.github.io/NEXA-Studio/)**
+
+---
 
 ## 👤 Author
 
 **Filipe G Morais**
 
-GitHub: https://github.com/sayjinblackbelt  
-Repository: https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder
+[GitHub](https://github.com/sayjinblackbelt) · [AI Financial Agent Builder](https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder)

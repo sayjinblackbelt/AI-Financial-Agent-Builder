@@ -1,76 +1,80 @@
 # AI Financial Agent Builder
 
-> A guided application that transforms a user's financial preferences into a personalized, local-first financial assistant configuration.
+> A local-first application that turns a user's financial profile and registered transactions into structured financial analysis and a foundation for a future conversational AI assistant.
 
 ## 🎯 Project purpose
 
-AI Financial Agent Builder is not initially designed as a banking application or investment platform.
+AI Financial Agent Builder is a portfolio project focused on **financial organization, data analysis and agent architecture**. It is not a banking application, investment platform or automatic transaction system.
 
-The MVP focuses on a guided onboarding process that:
+The current MVP provides:
 
-1. Collects basic financial preferences.
-2. Creates a structured financial profile.
-3. Initializes a local SQLite database.
-4. Defines categories, budgets and goals.
-5. Generates agent rules and configuration parameters.
-6. Prepares the foundation for a future conversational AI financial assistant.
+1. Guided financial onboarding.
+2. Structured financial profile generation.
+3. Local SQLite persistence.
+4. Transaction and category management.
+5. Category budgets and alerts.
+6. Monthly summaries and month-over-month comparison.
+7. Rule-based financial insights and narrative.
+8. Agent configuration and prompt generation.
+9. Flask API + browser dashboard.
 
 ## 🔄 Core flow
 
-```
-Guided Questions
+```text
+Guided Onboarding
       ↓
 Financial Profile
       ↓
-Structured JSON
+Flask API
       ↓
-Local SQLite Database
+SQLite
       ↓
-Agent Configuration
+Financial Analyzer
       ↓
-Future AI Financial Assistant
+Insights / Alerts / Trends
+      ↓
+Agent Configuration + Prompt
+      ↓
+Future Conversational AI
 ```
 
-## 🧭 MVP onboarding
+## 🧱 Architecture
 
-### 1. Basic profile
-- Preferred name
-- Currency
-- Financial control frequency
+```text
+app/
+├── agent/
+│   ├── config_builder.py
+│   └── prompt_builder.py
+├── database/
+│   ├── connection.py
+│   ├── schema.sql
+│   └── financial_agent.db
+├── models/
+│   └── financial_profile.py
+├── onboarding/
+│   ├── questions.py
+│   └── profile_builder.py
+├── services/
+│   ├── budget_service.py
+│   ├── financial_analyzer.py
+│   ├── financial_insights.py
+│   ├── financial_profile_service.py
+│   └── transaction_service.py
+├── main.py
+└── web_app.py
 
-### 2. Income
-- Monthly income
-- Income type: fixed, variable or mixed
-- Additional income sources
+web/
+├── app.js
+└── styles.css
 
-### 3. Expenses
-- Main fixed expenses
-- Main variable expenses
-- Categories to track
-
-### 4. Debts and commitments
-- Has debts?
-- Monthly debt commitments
-- Priority for debt monitoring
-
-### 5. Goals
-- Emergency reserve
-- Debt reduction
-- Savings goal
-- Purchase goal
-- Other custom goal
-
-### 6. Agent behavior
-- Communication style
-- Detail level
-- Alert preferences
-- Budget monitoring
-- Monthly comparison
-- Trend detection
-
-## 🗄️ Initial data model
-
+index.html
+requirements.txt
+tests/
 ```
+
+### Data model
+
+```text
 profile
 categories
 transactions
@@ -80,120 +84,60 @@ agent_settings
 financial_snapshot
 ```
 
+The database is **local-first**. Re-running the profile builder updates configuration while preserving registered transactions and budgets.
+
+## 🧠 Intelligence layer
+
+The analyzer currently works deterministically from SQLite data. It calculates:
+
+- current-month income, expenses and balance;
+- top expense categories;
+- budget utilization and alerts;
+- current vs. previous month;
+- expense and balance trends;
+- rule-based financial insights.
+
+The future AI layer should interpret these structured results rather than replacing deterministic financial calculations.
+
 ## 🤖 Agent configuration
 
-The builder will generate a structured configuration containing:
+The builder generates:
 
-- User financial profile
-- Categories
-- Goals
-- Monitoring rules
-- Alert thresholds
-- Communication preferences
-- Agent restrictions
+- user financial context;
+- categories and goals;
+- monitoring rules;
+- alert thresholds;
+- communication preferences;
+- explicit safety restrictions.
 
-Example:
+Current restrictions include:
 
-```json
-{
-  "agent_name": "Personal Financial Assistant",
-  "mode": "local-first",
-  "goals": [
-    "control expenses",
-    "monitor budget",
-    "identify spending trends"
-  ],
-  "alerts": {
-    "budget_warning_percent": 80
-  },
-  "restrictions": [
-    "Do not execute financial transactions",
-    "Do not request banking credentials",
-    "Do not make autonomous investment decisions"
-  ]
-}
+- no financial transaction execution;
+- no banking credentials;
+- no autonomous investment decisions;
+- clarification when financial data is incomplete.
+
+## 🧪 Testing
+
+The repository includes automated tests for database flows, transactions, budgets, monthly history, analyzer contracts, insights, prompt generation and Flask API integration.
+
+Run locally with:
+
+```bash
+pip install -r requirements.txt
+pip install pytest ruff
+PYTHONPATH=app pytest -q
 ```
 
-## 🛠️ Proposed architecture
+Quality checks used by CI:
 
-```
-app/
-├── main.py
-├── onboarding/
-│   ├── questions.py
-│   └── profile_builder.py
-├── database/
-│   ├── connection.py
-│   ├── schema.sql
-│   └── repositories.py
-├── agent/
-│   ├── config_builder.py
-│   └── prompt_builder.py
-├── services/
-│   └── financial_profile_service.py
-└── models/
-    └── financial_profile.py
+```bash
+python -m compileall -q app tests
+ruff check app tests --ignore DTZ011
+PYTHONPATH=app pytest -q
 ```
 
-## 🚀 Development roadmap
-
-### Version 0.1 — Builder MVP
-- Guided questions
-- Financial profile
-- JSON export
-- SQLite initialization
-- Agent configuration generation
-
-### Version 0.2 — Financial control
-- Income and expense records
-- Categories
-- Budgets
-- Monthly summaries
-
-### Version 0.3 — Intelligence layer
-- Data interpretation
-- Trend detection
-- Budget alerts
-- Personalized recommendations
-
-### Version 0.4 — AI agent
-- Conversational interface
-- Natural language transaction input
-- Context-aware analysis
-- Agent configuration integration
-
-## 🔒 Privacy principles
-
-- Local-first by default
-- No banking credentials
-- No automatic financial transactions
-- User controls stored data
-- AI integration should be optional
-
-## Status
-
-🟢 MVP in active development — onboarding, local SQLite persistence, transactions, budgets, alerts, insights and monthly trend analysis are implemented.
-
-
-## 🌐 Web + Python integration
-
-The project now has a Flask API layer connecting the browser onboarding to the Python application logic.
-
-```
-Web Interface
-     ↓ POST /api/build-profile
-Flask API
-     ↓
-Financial Profile Service
-     ↓
-SQLite
-     ↓
-Agent Configuration
-     ↓
-Prompt Builder
-```
-
-### Run locally
+## 🚀 Run locally
 
 ```bash
 pip install -r requirements.txt
@@ -203,21 +147,59 @@ python web_app.py
 
 Then open the local address shown by Flask.
 
-> The browser prototype can still run independently as a static demonstration. The Flask version is the path for persistence and full backend integration.
+> The current application requires the Flask backend for the complete experience, because onboarding, persistence and analysis use the Python API and SQLite database.
 
----
+## 🗺️ Roadmap
 
-## Author
+### v0.1 — Builder
+- Guided questions
+- Financial profile
+- Agent configuration
+
+### v0.2 — Financial control
+- Transactions
+- Categories
+- Budgets
+- Monthly summaries
+
+### v0.3 — Intelligence layer **← current MVP**
+- Financial analysis
+- Alerts
+- Month comparison
+- Trend detection
+- Rule-based insights
+- Flask dashboard
+- Automated tests
+
+### v0.4 — Conversational agent
+- Natural-language questions
+- Context-aware analysis
+- Natural-language transaction input
+- Agent configuration integration
+
+### v1.0 — Demonstrable portfolio product
+- Import/export
+- Reports
+- Deployment
+- Documentation and product demonstration
+
+## 🔒 Privacy principles
+
+- Local-first by default.
+- No banking credentials.
+- No automatic financial transactions.
+- No autonomous investment decisions.
+- AI integration should be optional.
+
+## Status
+
+🟡 **MVP v0.3 — technical validation in progress.**
+
+The core application, persistence layer, analysis layer, dashboard and automated test suite are implemented. The next validation step is executing the complete suite and browser/API flow in a real development environment.
+
+## 👤 Author
 
 **Filipe G Morais**
 
 GitHub: https://github.com/sayjinblackbelt  
 Repository: https://github.com/sayjinblackbelt/AI-Financial-Agent-Builder
-
-<!-- CI trigger: multilingual portfolio validation -->
-
-<!-- CI retest after Ruff quality adjustment -->
-
-<!-- CI retest: database bootstrap -->
-
-<!-- CI retest: Flask application object -->
